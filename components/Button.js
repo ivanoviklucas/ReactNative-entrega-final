@@ -1,33 +1,33 @@
-import React from 'react';
-import { Pressable, View, Text, StyleSheet } from 'react-native';
-import colors from './colors';
+import React from "react";
+import { Pressable, View, Text, StyleSheet } from "react-native";
 
-export default function Boton({ onPress }) {
+import colors from "./stylos/colors";
+import espaciado from "./stylos/espaciado";
+import tipografia from "./stylos/tipografia";
+
+export default function Boton({ texto, onPress }) {
   return (
     <Pressable onPress={onPress}>
-      <View style={styles.button}>
-        <Text style={styles.buttonText}>Ingresar</Text>
+      <View style={styles.boton}>
+        <Text style={styles.texto}>{texto}</Text>
       </View>
     </Pressable>
   );
 }
 
-
 const styles = StyleSheet.create({
-  button: {
-    width: '100%',
-    marginTop: 10,
-    borderRadius: 8,
+  boton: {
+    width: "100%",
     backgroundColor: colors.terciarios.verdeEsmeralda,
-    paddingVertical: 12,
-    paddingHorizontal: 20,
-    alignItems: 'center',
+    paddingVertical: espaciado.sm,
+    paddingHorizontal: espaciado.md,
+    borderRadius: 8,
+    alignItems: "center",
   },
 
-  buttonText: {
-    color: 'white',
-    fontSize: 18,
-    fontWeight: 'bold',
+  texto: {
+    color: "#fff",
+    fontSize: tipografia.tamanios.texto,
+    fontWeight: tipografia.peso.negrita,
   },
 });
-// para poder guardarlo

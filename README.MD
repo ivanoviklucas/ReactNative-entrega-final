@@ -82,13 +82,13 @@ Revisar tu historial de pedidos y ganancias
 
 Conexión con Firebase
 
-Base de datos en tiempo real: TU_LINK_REALTIME_DATABASE
+Base de datos en tiempo real: https://console.firebase.google.com/project/pedidos-coder/overview?hl=es-419
 
 Usuarios y autenticación: todos los repartidores registrados están ahí
 
 Link del repositorio
 
-GitHub: TU_REPOSITORIO_DE_GITHUB
+GitHub: https://github.com/ivanoviklucas/ReactNative-entrega-final
 
 Tecnologías utilizadas
 

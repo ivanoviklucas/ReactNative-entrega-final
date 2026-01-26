@@ -59,13 +59,21 @@ export default function Inicio({ navigation }) {
   return (
     <View style={styles.container}>
       {ubicacion ? (
-        <MapView 
-          style={styles.map} 
-          initialRegion={ubicacion}
-          showsUserLocation
-          followsUserLocation
-          showsMyLocationButton
-        />
+       <MapView
+  style={{ flex: 1 }}
+  showsUserLocation={true}
+  showsMyLocationButton={true}
+  // Para llevarlo ARRIBA a la IZQUIERDA:
+  mapPadding={{ 
+    top: 30,      // Un poco de espacio desde el borde superior
+    right: 320,   // <--- Un valor alto "empuja" el botón desde la derecha a la izquierda
+    bottom: 500,  // <--- Un valor alto "empuja" el botón desde abajo hacia arriba
+    left: 0, 
+    
+  
+  }}
+>
+</MapView>
       ) : (
         <View style={styles.loadingMap}>
           <ActivityIndicator size="large" color={colors.secundarios.verdeHoja} />

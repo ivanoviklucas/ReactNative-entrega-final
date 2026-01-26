@@ -48,7 +48,6 @@ export default function Pedidos() {
       dispatch(llegueADomicilio());
       baseDatosPedido.guardar({ ...pedidoActivo, riderStatus: "En domicilio del cliente" });
     } else if (riderStatus === "En domicilio del cliente") {
-      // Simulación de "Sweet Alert" (Cartel de éxito estilizado de React Native)
       Alert.alert(
         "🎉 ¡Entrega Exitosa!",
         "Has finalizado el pedido. ¡Buen trabajo!",
@@ -84,13 +83,17 @@ export default function Pedidos() {
       </View>
 
       <View style={styles.mapContainer}>
-        <MapView
-          ref={mapRef}
-          style={styles.map}
-          showsUserLocation={true}
-          showsMyLocationButton={false} // Lo ocultamos porque tenemos nuestro propio botón
-          followsUserLocation={true}
-        />
+         <MapView
+                  style={{ flex: 1 }}
+                  showsUserLocation={true}
+                  showsMyLocationButton={true}
+                  mapPadding={{
+                    top: 30,
+                    right: 320,
+                    bottom: 500,
+                    left: 0,
+                  }}
+                ></MapView>
       </View>
 
       <View style={styles.footerAcciones}>

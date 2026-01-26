@@ -148,7 +148,8 @@ const styles = StyleSheet.create({
     paddingHorizontal: 15,
     borderRadius: 10,
     elevation: 5,
-    zIndex: 100
+    zIndex: 100,
+    marginTop: 30,
   },
   textoPerfil: { 
     fontWeight: tipografia.peso.negrita, 

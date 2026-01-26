@@ -1,22 +1,33 @@
-import React, { useState, useEffect } from 'react';
-import { View, Text, ActivityIndicator, TouchableOpacity, StyleSheet } from 'react-native';
-import { useDispatch, useSelector } from 'react-redux';
-import MapView from 'react-native-maps';
-import * as Location from 'expo-location';
-import { baseDatosPedido } from '../assets/service/Localdb';
-import { inicioBusqueda, cancelarBusqueda, pedidoAceptado, ReasignarPedido } from '../store/slice';
-import { useGetPedidosQuery } from '../assets/service/servicerepartidores';
-import ModalPerfil from './modal';
-import Button from './Button'; 
-import colors from './stylos/colors';
-import espaciado from './stylos/espaciado';
-import tipografia from './stylos/tipografia';
+import React, { useState, useEffect } from "react";
+import {
+  View,
+  Text,
+  ActivityIndicator,
+  TouchableOpacity,
+  StyleSheet,
+} from "react-native";
+import { useDispatch, useSelector } from "react-redux";
+import MapView from "react-native-maps";
+import * as Location from "expo-location";
+import { baseDatosPedido } from "../assets/service/Localdb";
+import {
+  inicioBusqueda,
+  cancelarBusqueda,
+  pedidoAceptado,
+  ReasignarPedido,
+} from "../store/slice";
+import { useGetPedidosQuery } from "../assets/service/servicerepartidores";
+import ModalPerfil from "./modal";
+import Button from "./Button";
+import colors from "./stylos/colors";
+import espaciado from "./stylos/espaciado";
+import tipografia from "./stylos/tipografia";
 
 export default function Inicio({ navigation }) {
   const dispatch = useDispatch();
-  const usuarioLogueado = useSelector(state => state.rider.usuarioLogueado);
-  const riderStatus = useSelector(state => state.rider.riderStatus);
-  const pedidoActivo = useSelector(state => state.rider.pedidoActivo);
+  const usuarioLogueado = useSelector((state) => state.rider.usuarioLogueado);
+  const riderStatus = useSelector((state) => state.rider.riderStatus);
+  const pedidoActivo = useSelector((state) => state.rider.pedidoActivo);
 
   const [modalVisible, setModalVisible] = useState(false);
   const [indicePedido, setIndicePedido] = useState(0);
@@ -26,14 +37,16 @@ export default function Inicio({ navigation }) {
   const pedidos = pedidosData ? Object.values(pedidosData) : [];
 
   const pedidoActual =
-    riderStatus === "Buscando pedidos..." && pedidos[indicePedido] && !pedidoActivo
+    riderStatus === "Buscando pedidos..." &&
+    pedidos[indicePedido] &&
+    !pedidoActivo
       ? pedidos[indicePedido]
       : null;
 
   useEffect(() => {
     (async () => {
       let { status } = await Location.requestForegroundPermissionsAsync();
-      if (status !== 'granted') return;
+      if (status !== "granted") return;
       let localizacion = await Location.getCurrentPositionAsync({});
       setUbicacion({
         latitude: localizacion.coords.latitude,
@@ -46,7 +59,7 @@ export default function Inicio({ navigation }) {
 
   const manejarRechazo = () => {
     if (indicePedido < pedidos.length - 1) {
-      setIndicePedido(prev => prev + 1);
+      setIndicePedido((prev) => prev + 1);
       dispatch(ReasignarPedido());
     } else {
       setIndicePedido(0);
@@ -59,53 +72,62 @@ export default function Inicio({ navigation }) {
   return (
     <View style={styles.container}>
       {ubicacion ? (
-       <MapView
-  style={{ flex: 1 }}
-  showsUserLocation={true}
-  showsMyLocationButton={true}
-  // Para llevarlo ARRIBA a la IZQUIERDA:
-  mapPadding={{ 
-    top: 30,      // Un poco de espacio desde el borde superior
-    right: 320,   // <--- Un valor alto "empuja" el botón desde la derecha a la izquierda
-    bottom: 500,  // <--- Un valor alto "empuja" el botón desde abajo hacia arriba
-    left: 0, 
-    
-  
-  }}
->
-</MapView>
+        <MapView
+          style={{ flex: 1 }}
+          showsUserLocation={true}
+          showsMyLocationButton={true}
+          mapPadding={{
+            top: 30,
+            right: 320,
+            bottom: 500,
+            left: 0,
+          }}
+        ></MapView>
       ) : (
         <View style={styles.loadingMap}>
-          <ActivityIndicator size="large" color={colors.secundarios.verdeHoja} />
+          <ActivityIndicator
+            size="large"
+            color={colors.secundarios.verdeHoja}
+          />
           <Text style={{ marginTop: espaciado.sm }}>Cargando mapa...</Text>
         </View>
       )}
 
-      <TouchableOpacity style={styles.botonPerfilFlotante} onPress={() => setModalVisible(true)}>
+      <TouchableOpacity
+        style={styles.botonPerfilFlotante}
+        onPress={() => setModalVisible(true)}
+      >
         <Text style={styles.textoPerfil}>👤 Perfil</Text>
       </TouchableOpacity>
 
       {!pedidoActivo ? (
         <View style={styles.bottomActions}>
-          <Text style={styles.userBadge}>Hola, {usuarioLogueado.nombre} 👋</Text>
+          <Text style={styles.userBadge}>
+            Hola, {usuarioLogueado.nombre} 👋
+          </Text>
           {riderStatus === "inactivo" ? (
-            <Button 
-              texto="Conectarse" 
-              onPress={() => dispatch(inicioBusqueda())} 
+            <Button
+              texto="Conectarse"
+              onPress={() => dispatch(inicioBusqueda())}
               style={styles.botonConectarse}
             />
           ) : (
-            <Button 
-              texto="Cancelar Búsqueda" 
-              onPress={() => dispatch(cancelarBusqueda())} 
+            <Button
+              texto="Cancelar Búsqueda"
+              onPress={() => dispatch(cancelarBusqueda())}
               style={styles.botonCancelar}
             />
           )}
         </View>
       ) : (
-        <TouchableOpacity style={styles.cartelAviso} onPress={() => navigation.navigate("Pedidos")}>
+        <TouchableOpacity
+          style={styles.cartelAviso}
+          onPress={() => navigation.navigate("Pedidos")}
+        >
           <Text style={styles.textoAviso}>📍 Tienes un pedido en curso</Text>
-          <Text style={styles.subtextoAviso}>Toca aquí para ver los detalles</Text>
+          <Text style={styles.subtextoAviso}>
+            Toca aquí para ver los detalles
+          </Text>
         </TouchableOpacity>
       )}
 
@@ -123,7 +145,10 @@ export default function Inicio({ navigation }) {
             <Button
               texto="Aceptar"
               onPress={() => {
-                const pedidoParaDisco = { ...pedidoActual, riderStatus: "En pedido" };
+                const pedidoParaDisco = {
+                  ...pedidoActual,
+                  riderStatus: "En pedido",
+                };
                 baseDatosPedido.guardar(pedidoParaDisco);
                 dispatch(pedidoAceptado(pedidoParaDisco));
               }}
@@ -138,7 +163,11 @@ export default function Inicio({ navigation }) {
         </View>
       )}
 
-      <ModalPerfil visible={modalVisible} setVisible={setModalVisible} usuario={usuarioLogueado} />
+      <ModalPerfil
+        visible={modalVisible}
+        setVisible={setModalVisible}
+        usuario={usuarioLogueado}
+      />
     </View>
   );
 }
@@ -146,9 +175,9 @@ export default function Inicio({ navigation }) {
 const styles = StyleSheet.create({
   container: { flex: 1 },
   map: { flex: 1 },
-  loadingMap: { flex: 1, justifyContent: 'center', alignItems: 'center' },
+  loadingMap: { flex: 1, justifyContent: "center", alignItems: "center" },
   botonPerfilFlotante: {
-    position: 'absolute',
+    position: "absolute",
     top: 40,
     right: 20,
     backgroundColor: colors.primarios.verdeMuyClaro,
@@ -159,104 +188,104 @@ const styles = StyleSheet.create({
     zIndex: 100,
     marginTop: 30,
   },
-  textoPerfil: { 
-    fontWeight: tipografia.peso.negrita, 
-    color: colors.terciarios.verdeOscuro 
+  textoPerfil: {
+    fontWeight: tipografia.peso.negrita,
+    color: colors.terciarios.verdeOscuro,
   },
   bottomActions: {
-    position: 'absolute',
+    position: "absolute",
     bottom: 20,
     left: 20,
     right: 20,
     backgroundColor: colors.primarios.verdeMuyClaro,
     padding: espaciado.md,
     borderRadius: 15,
-    elevation: 5
+    elevation: 5,
   },
   cartelAviso: {
-    position: 'absolute',
+    position: "absolute",
     bottom: 30,
     left: 20,
     right: 20,
     backgroundColor: colors.secundarios.verdeBosque,
     padding: 20,
     borderRadius: 15,
-    alignItems: 'center',
-    elevation: 10
+    alignItems: "center",
+    elevation: 10,
   },
-  textoAviso: { 
-    color: '#fff', 
-    fontWeight: tipografia.peso.negrita 
+  textoAviso: {
+    color: "#fff",
+    fontWeight: tipografia.peso.negrita,
   },
-  subtextoAviso: { 
-    color: '#eee', 
-    fontSize: tipografia.tamanios.chico 
+  subtextoAviso: {
+    color: "#eee",
+    fontSize: tipografia.tamanios.chico,
   },
-  userBadge: { 
-    fontSize: tipografia.tamanios.subtitulo, 
-    fontWeight: tipografia.peso.negrita, 
-    marginBottom: 10, 
-    textAlign: 'center' 
+  userBadge: {
+    fontSize: tipografia.tamanios.subtitulo,
+    fontWeight: tipografia.peso.negrita,
+    marginBottom: 10,
+    textAlign: "center",
   },
   pedidoCard: {
-    position: 'absolute',
+    position: "absolute",
     top: 100,
     left: 20,
     right: 20,
-    backgroundColor: '#fff',
+    backgroundColor: "#fff",
     padding: 20,
     borderRadius: 15,
     elevation: 20,
     borderWidth: 2,
-    borderColor: colors.primarios.verdePrimavera, 
-    zIndex: 200
+    borderColor: colors.primarios.verdePrimavera,
+    zIndex: 200,
   },
-  pedidoTitulo: { 
-    fontSize: tipografia.tamanios.titulo, 
-    fontWeight: tipografia.peso.negrita, 
-    color: colors.secundarios.verdeMedio, 
-    textAlign: 'center' 
+  pedidoTitulo: {
+    fontSize: tipografia.tamanios.titulo,
+    fontWeight: tipografia.peso.negrita,
+    color: colors.secundarios.verdeMedio,
+    textAlign: "center",
   },
   infoBox: { marginVertical: 15 },
-  label: { 
-    fontSize: tipografia.tamanios.chico, 
-    color: '#666', 
-    fontWeight: tipografia.peso.negrita 
+  label: {
+    fontSize: tipografia.tamanios.chico,
+    color: "#666",
+    fontWeight: tipografia.peso.negrita,
   },
-  dato: { 
-    fontSize: tipografia.tamanios.texto, 
-    color: '#333', 
-    marginBottom: 5 
+  dato: {
+    fontSize: tipografia.tamanios.texto,
+    color: "#333",
+    marginBottom: 5,
   },
-  precio: { 
-    fontSize: tipografia.tamanios.subtitulo, 
-    fontWeight: tipografia.peso.negrita, 
-    color: colors.secundarios.verdeMedio 
+  precio: {
+    fontSize: tipografia.tamanios.subtitulo,
+    fontWeight: tipografia.peso.negrita,
+    color: colors.secundarios.verdeMedio,
   },
-  botonesRow: { 
-    flexDirection: 'row', 
-    justifyContent: 'space-between', 
+  botonesRow: {
+    flexDirection: "row",
+    justifyContent: "space-between",
     marginTop: 10,
-    width: '100%'
+    width: "100%",
   },
   botonConectarse: {
     backgroundColor: colors.terciarios.verdeEsmeralda,
-    width: '100%'
+    width: "100%",
   },
-  botonAceptar: { 
-    backgroundColor: colors.primarios.verdePrimavera, 
-    flex: 1, 
+  botonAceptar: {
+    backgroundColor: colors.primarios.verdePrimavera,
+    flex: 1,
     marginRight: 5,
-    minHeight: 45
+    minHeight: 45,
   },
-  botonRechazar: { 
-    backgroundColor: colors.secundarios.verdeHoja, 
-    flex: 1, 
-    marginLeft: 5,
-    minHeight: 45
-  },
-  botonCancelar: { 
+  botonRechazar: {
     backgroundColor: colors.secundarios.verdeHoja,
-    width: '100%'
-  }
+    flex: 1,
+    marginLeft: 5,
+    minHeight: 45,
+  },
+  botonCancelar: {
+    backgroundColor: colors.secundarios.verdeHoja,
+    width: "100%",
+  },
 });

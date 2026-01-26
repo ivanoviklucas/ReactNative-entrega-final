@@ -1,11 +1,18 @@
 import React, { useState } from "react";
-import { View, Text, TextInput, Button, StyleSheet, Alert } from "react-native";
+// SACAMOS 'Button' de acá porque si no, la app no sabe cuál usar y se tilda
+import { View, Text, TextInput, StyleSheet, Alert } from "react-native";
 import { signInWithEmailAndPassword } from "firebase/auth";
 import { auth, database } from "../assets/service/firebaseconfig";
 import { ref, get } from "firebase/database";
 import { useDispatch } from "react-redux";
 import { setUsuarioLogueado } from "../store/slice";
 import { localDB } from "../assets/service/Localdb";
+
+// IMPORT DE TUS ESTILOS Y TU COMPONENTE
+import Button from './Button'; 
+import colors from './stylos/colors';
+import espaciado from './stylos/espaciado';
+import tipografia from './stylos/tipografia';
 
 export default function Loggin({ navigation }) {
   const [email, setEmail] = useState("");
@@ -21,8 +28,6 @@ export default function Loggin({ navigation }) {
     try {
       const userCredential = await signInWithEmailAndPassword(auth, email.trim(), contraseña);
       const uid = userCredential.user.uid;
-      
-      // Buscamos los datos del repartidor en la base de datos
       const snapshot = await get(ref(database, `repartidores/${uid}`));
 
       if (!snapshot.exists()) {
@@ -31,19 +36,10 @@ export default function Loggin({ navigation }) {
       }
 
       const usuarioLogueado = { uid, ...snapshot.val() };
-
-      // 1. Guardamos la sesión en SQLite para que no se cierre al salir de la app 💾
       localDB.saveSession(usuarioLogueado);
-
-      // 2. Actualizamos Redux 🧠
-      // Al hacer este dispatch, el estado global cambia. 
-      // Como App.js está escuchando, detecta que hay usuario y te manda al Inicio solo.
       dispatch(setUsuarioLogueado(usuarioLogueado));
 
-      // ✅ NOTA: Ya no usamos navigation.reset aquí para evitar choques con App.js
-
     } catch (error) {
-      console.log("Error en login:", error);
       Alert.alert("Error", "Email o contraseña incorrectos");
     }
   };
@@ -68,13 +64,17 @@ export default function Loggin({ navigation }) {
         secureTextEntry 
       />
       
-      <Button title="Ingresar" onPress={iniciarSesion} />
+      <Button 
+        texto="Ingresar" 
+        onPress={iniciarSesion} 
+        style={styles.botonIngresar}
+      />
       
       <View style={{ marginTop: 20 }}>
         <Button 
-          title="¿No tienes cuenta? Regístrate" 
-          color="#666"
+          texto="¿No tienes cuenta? Regístrate" 
           onPress={() => navigation.navigate("Registrarse")} 
+          style={styles.botonRegistro}
         />
       </View>
     </View>
@@ -85,21 +85,30 @@ const styles = StyleSheet.create({
   container: { 
     flex: 1, 
     justifyContent: "center", 
-    padding: 20,
-    backgroundColor: "#fff" 
+    padding: espaciado?.lg || 20,
+    backgroundColor: colors?.primarios?.verdeMuyClaro || "#fff" 
   },
   title: { 
-    fontSize: 24, 
+    fontSize: tipografia?.tamanios?.titulo || 24, 
     fontWeight: "bold", 
     marginBottom: 25, 
     textAlign: "center",
-    color: "#333" 
+    color: colors?.terciarios?.verdeOscuro || "#333" 
   },
   input: { 
     borderWidth: 1, 
-    borderColor: "#ccc", 
+    borderColor: colors?.primarios?.verdeClaro || "#ccc", 
     padding: 12, 
     marginBottom: 15, 
-    borderRadius: 8 
+    borderRadius: 8,
+    backgroundColor: "#fff"
   },
+  botonIngresar: {
+    backgroundColor: colors?.terciarios?.verdeEsmeralda || "#145A32",
+    width: "100%"
+  },
+  botonRegistro: {
+    backgroundColor: "#666",
+    width: "100%"
+  }
 });

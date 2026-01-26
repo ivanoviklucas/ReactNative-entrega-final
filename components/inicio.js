@@ -1,25 +1,22 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, Button, ActivityIndicator, TouchableOpacity } from 'react-native';
+import { View, Text, ActivityIndicator, TouchableOpacity, StyleSheet } from 'react-native';
 import { useDispatch, useSelector } from 'react-redux';
 import MapView from 'react-native-maps';
 import * as Location from 'expo-location';
-
-import { baseDatosPedido, localDB } from '../assets/service/Localdb';
-import { 
-  inicioBusqueda, 
-  cancelarBusqueda, 
-  pedidoAceptado, 
-  ReasignarPedido 
-} from '../store/slice';
-
+import { baseDatosPedido } from '../assets/service/Localdb';
+import { inicioBusqueda, cancelarBusqueda, pedidoAceptado, ReasignarPedido } from '../store/slice';
 import { useGetPedidosQuery } from '../assets/service/servicerepartidores';
-import ModalPerfil from './modal'; 
+import ModalPerfil from './modal';
+import Button from './Button'; 
+import colors from './stylos/colors';
+import espaciado from './stylos/espaciado';
+import tipografia from './stylos/tipografia';
 
 export default function Inicio({ navigation }) {
   const dispatch = useDispatch();
-  const usuarioLogueado = useSelector((state) => state.rider.usuarioLogueado);
-  const riderStatus = useSelector((state) => state.rider.riderStatus);
-  const pedidoActivo = useSelector((state) => state.rider.pedidoActivo); 
+  const usuarioLogueado = useSelector(state => state.rider.usuarioLogueado);
+  const riderStatus = useSelector(state => state.rider.riderStatus);
+  const pedidoActivo = useSelector(state => state.rider.pedidoActivo);
 
   const [modalVisible, setModalVisible] = useState(false);
   const [indicePedido, setIndicePedido] = useState(0);
@@ -28,7 +25,7 @@ export default function Inicio({ navigation }) {
   const { data: pedidosData } = useGetPedidosQuery();
   const pedidos = pedidosData ? Object.values(pedidosData) : [];
 
-  const pedidoActual = 
+  const pedidoActual =
     riderStatus === "Buscando pedidos..." && pedidos[indicePedido] && !pedidoActivo
       ? pedidos[indicePedido]
       : null;
@@ -50,7 +47,7 @@ export default function Inicio({ navigation }) {
   const manejarRechazo = () => {
     if (indicePedido < pedidos.length - 1) {
       setIndicePedido(prev => prev + 1);
-      dispatch(ReasignarPedido()); // Esto ya borra el disco ahora
+      dispatch(ReasignarPedido());
     } else {
       setIndicePedido(0);
       dispatch(cancelarBusqueda());
@@ -65,28 +62,36 @@ export default function Inicio({ navigation }) {
         <MapView 
           style={styles.map} 
           initialRegion={ubicacion}
-          showsUserLocation={true}
-          followsUserLocation={true}
-          showsMyLocationButton={true}
+          showsUserLocation
+          followsUserLocation
+          showsMyLocationButton
         />
       ) : (
         <View style={styles.loadingMap}>
-          <ActivityIndicator size="large" color="#0000ff" />
-          <Text>Cargando mapa...</Text>
+          <ActivityIndicator size="large" color={colors.secundarios.verdeHoja} />
+          <Text style={{ marginTop: espaciado.sm }}>Cargando mapa...</Text>
         </View>
       )}
 
       <TouchableOpacity style={styles.botonPerfilFlotante} onPress={() => setModalVisible(true)}>
         <Text style={styles.textoPerfil}>👤 Perfil</Text>
-      </TouchableOpacity>   
+      </TouchableOpacity>
 
       {!pedidoActivo ? (
         <View style={styles.bottomActions}>
           <Text style={styles.userBadge}>Hola, {usuarioLogueado.nombre} 👋</Text>
           {riderStatus === "inactivo" ? (
-            <Button title="Conectarse" onPress={() => dispatch(inicioBusqueda())} />
+            <Button 
+              texto="Conectarse" 
+              onPress={() => dispatch(inicioBusqueda())} 
+              style={styles.botonConectarse}
+            />
           ) : (
-            <Button title="Cancelar Búsqueda" color="red" onPress={() => dispatch(cancelarBusqueda())} />
+            <Button 
+              texto="Cancelar Búsqueda" 
+              onPress={() => dispatch(cancelarBusqueda())} 
+              style={styles.botonCancelar}
+            />
           )}
         </View>
       ) : (
@@ -107,15 +112,24 @@ export default function Inicio({ navigation }) {
             <Text style={styles.precio}>${pedidoActual.precio}</Text>
           </View>
           <View style={styles.botonesRow}>
-            <Button title="Aceptar" color="#2ecc71" onPress={() => {
-              const pedidoParaDisco = { ...pedidoActual, riderStatus: "En pedido" };
-              baseDatosPedido.guardar(pedidoParaDisco);
-              dispatch(pedidoAceptado(pedidoParaDisco));
-            }} />
-            <Button title="Rechazar" color="#e74c3c" onPress={manejarRechazo} />
+            <Button
+              texto="Aceptar"
+              onPress={() => {
+                const pedidoParaDisco = { ...pedidoActual, riderStatus: "En pedido" };
+                baseDatosPedido.guardar(pedidoParaDisco);
+                dispatch(pedidoAceptado(pedidoParaDisco));
+              }}
+              style={styles.botonAceptar}
+            />
+            <Button
+              texto="Rechazar"
+              onPress={manejarRechazo}
+              style={styles.botonRechazar}
+            />
           </View>
         </View>
       )}
+
       <ModalPerfil visible={modalVisible} setVisible={setModalVisible} usuario={usuarioLogueado} />
     </View>
   );
@@ -125,18 +139,115 @@ const styles = StyleSheet.create({
   container: { flex: 1 },
   map: { flex: 1 },
   loadingMap: { flex: 1, justifyContent: 'center', alignItems: 'center' },
-  botonPerfilFlotante: { position: 'absolute', top: 50, right: 20, backgroundColor: 'white', paddingVertical: 8, paddingHorizontal: 15, borderRadius: 20, elevation: 5, zIndex: 100 },
-  textoPerfil: { fontWeight: 'bold', color: '#333' },
-  bottomActions: { position: 'absolute', bottom: 20, left: 20, right: 20, backgroundColor: 'white', padding: 15, borderRadius: 15, elevation: 5 },
-  cartelAviso: { position: 'absolute', bottom: 30, left: 20, right: 20, backgroundColor: '#34495e', padding: 15, borderRadius: 15, alignItems: 'center', elevation: 10 },
-  textoAviso: { color: 'white', fontWeight: 'bold', fontSize: 16 },
-  subtextoAviso: { color: '#bdc3c7', fontSize: 12 },
-  userBadge: { fontSize: 18, fontWeight: 'bold', marginBottom: 10, textAlign: 'center' },
-  pedidoCard: { position: 'absolute', top: 100, left: 20, right: 20, backgroundColor: 'white', padding: 20, borderRadius: 15, elevation: 20, borderWidth: 2, borderColor: '#2ecc71' },
-  pedidoTitulo: { fontSize: 20, fontWeight: 'bold', color: '#2ecc71', textAlign: 'center' },
+  botonPerfilFlotante: {
+    position: 'absolute',
+    top: 40,
+    right: 20,
+    backgroundColor: colors.primarios.verdeMuyClaro,
+    paddingVertical: 10,
+    paddingHorizontal: 15,
+    borderRadius: 10,
+    elevation: 5,
+    zIndex: 100
+  },
+  textoPerfil: { 
+    fontWeight: tipografia.peso.negrita, 
+    color: colors.terciarios.verdeOscuro 
+  },
+  bottomActions: {
+    position: 'absolute',
+    bottom: 20,
+    left: 20,
+    right: 20,
+    backgroundColor: colors.primarios.verdeMuyClaro,
+    padding: espaciado.md,
+    borderRadius: 15,
+    elevation: 5
+  },
+  cartelAviso: {
+    position: 'absolute',
+    bottom: 30,
+    left: 20,
+    right: 20,
+    backgroundColor: colors.secundarios.verdeBosque,
+    padding: 20,
+    borderRadius: 15,
+    alignItems: 'center',
+    elevation: 10
+  },
+  textoAviso: { 
+    color: '#fff', 
+    fontWeight: tipografia.peso.negrita 
+  },
+  subtextoAviso: { 
+    color: '#eee', 
+    fontSize: tipografia.tamanios.chico 
+  },
+  userBadge: { 
+    fontSize: tipografia.tamanios.subtitulo, 
+    fontWeight: tipografia.peso.negrita, 
+    marginBottom: 10, 
+    textAlign: 'center' 
+  },
+  pedidoCard: {
+    position: 'absolute',
+    top: 100,
+    left: 20,
+    right: 20,
+    backgroundColor: '#fff',
+    padding: 20,
+    borderRadius: 15,
+    elevation: 20,
+    borderWidth: 2,
+    borderColor: colors.primarios.verdePrimavera, 
+    zIndex: 200
+  },
+  pedidoTitulo: { 
+    fontSize: tipografia.tamanios.titulo, 
+    fontWeight: tipografia.peso.negrita, 
+    color: colors.secundarios.verdeMedio, 
+    textAlign: 'center' 
+  },
   infoBox: { marginVertical: 15 },
-  label: { fontSize: 12, color: '#666', fontWeight: 'bold' },
-  dato: { fontSize: 16, color: '#333', marginBottom: 5 },
-  precio: { fontSize: 20, fontWeight: 'bold', color: '#27ae60' },
-  botonesRow: { flexDirection: 'row', justifyContent: 'space-around', width: '100%' },
+  label: { 
+    fontSize: tipografia.tamanios.chico, 
+    color: '#666', 
+    fontWeight: tipografia.peso.negrita 
+  },
+  dato: { 
+    fontSize: tipografia.tamanios.texto, 
+    color: '#333', 
+    marginBottom: 5 
+  },
+  precio: { 
+    fontSize: tipografia.tamanios.subtitulo, 
+    fontWeight: tipografia.peso.negrita, 
+    color: colors.secundarios.verdeMedio 
+  },
+  botonesRow: { 
+    flexDirection: 'row', 
+    justifyContent: 'space-between', 
+    marginTop: 10,
+    width: '100%'
+  },
+  botonConectarse: {
+    backgroundColor: colors.terciarios.verdeEsmeralda,
+    width: '100%'
+  },
+  botonAceptar: { 
+    backgroundColor: colors.primarios.verdePrimavera, 
+    flex: 1, 
+    marginRight: 5,
+    minHeight: 45
+  },
+  botonRechazar: { 
+    backgroundColor: colors.secundarios.verdeHoja, 
+    flex: 1, 
+    marginLeft: 5,
+    minHeight: 45
+  },
+  botonCancelar: { 
+    backgroundColor: colors.secundarios.verdeHoja,
+    width: '100%'
+  }
 });

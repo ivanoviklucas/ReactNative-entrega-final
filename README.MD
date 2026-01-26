@@ -63,11 +63,19 @@ Confirmar entregas
 Revisar tu historial de pedidos y ganancias
 
 Conexión con Firebase
+<<<<<<< HEAD
+=======
+
+>>>>>>> 087c7a8d55bd5f742112bcf102cf0b0e2f9f7b7c
 Base de datos en tiempo real: https://console.firebase.google.com/project/pedidos-coder/overview?hl=es-419
 
 Usuarios y autenticación: todos los repartidores registrados están ahí
 
 Link del repositorio
+<<<<<<< HEAD
+=======
+
+>>>>>>> 087c7a8d55bd5f742112bcf102cf0b0e2f9f7b7c
 GitHub: https://github.com/ivanoviklucas/ReactNative-entrega-final
 
 Tecnologías utilizadas
@@ -85,4 +93,7 @@ Notas
 Cada usuario tiene sus propias ganancias guardadas localmente.
 
 La app está pensada para entender la gestión de pedidos en tiempo real, ideal para principiantes y cursos de desarrollo móvil.
+<<<<<<< HEAD
 
+=======
+>>>>>>> 087c7a8d55bd5f742112bcf102cf0b0e2f9f7b7c

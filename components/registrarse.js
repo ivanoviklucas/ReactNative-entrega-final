@@ -1,11 +1,10 @@
 import React, { useState } from "react";
-// Quitamos Button de aquí para que no se tilde la app por nombres duplicados
 import { View, TextInput, StyleSheet, Alert, Text } from "react-native";
 import { createUserWithEmailAndPassword } from "firebase/auth";
 import { ref, get, set } from "firebase/database";
 import { auth, database } from "../assets/service/firebaseconfig";
 
-// ACOPLAMOS ESTILOS Y TU COMPONENTE BUTTON
+
 import Button from './Button'; 
 import colors from './stylos/colors';
 import espaciado from './stylos/espaciado';
@@ -59,7 +58,7 @@ export default function Registrarse({ navigation }) {
       Alert.alert("Error", error.message);
     }
   };
-
+git
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Registro</Text>

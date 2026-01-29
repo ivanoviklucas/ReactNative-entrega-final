@@ -58,7 +58,6 @@ export default function Registrarse({ navigation }) {
       Alert.alert("Error", error.message);
     }
   };
-git
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Registro</Text>

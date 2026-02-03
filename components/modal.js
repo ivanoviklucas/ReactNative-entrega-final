@@ -32,8 +32,6 @@ export default function ModalPerfil({ visible, setVisible, usuario }) {
           <Text style={styles.label}>Patente:</Text>
           <Text style={styles.valor}>{usuario.patente || "N/A"}</Text>
           
-          <Text style={styles.label}>Zona:</Text>
-          <Text style={styles.valor}>{usuario.zona}</Text>
           
           <View style={[styles.badge, { backgroundColor: usuario.activo ? "#C8E6C9" : "#FFCDD2" }]}>
              <Text style={{ color: usuario.activo ? "#2E7D32" : "#C62828", fontWeight: "bold" }}>
